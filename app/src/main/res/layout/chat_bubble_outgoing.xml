@@ -243,7 +243,7 @@
                     android:layout_width="@dimen/small_icon_size"
                     android:layout_height="match_parent"
                     android:layout_marginStart="2dp"
-                    android:paddingTop="7dp"
+                    android:paddingTop="2dp"
                     android:layout_gravity="bottom"
                     android:contentDescription="@null"
                     android:src="@drawable/clock_countdown"
