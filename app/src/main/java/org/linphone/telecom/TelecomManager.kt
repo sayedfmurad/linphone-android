@@ -76,11 +76,13 @@ class TelecomManager
         Log.i(
             "$TAG android.software.telecom feature is [${if (hasTelecomFeature) "available" else "not available"}]"
         )
-        try {
-            callsManager.registerAppWithTelecom(CallsManager.CAPABILITY_SUPPORTS_VIDEO_CALLING)
-            Log.i("$TAG App has been registered with Telecom")
-        } catch (e: Exception) {
-            Log.e("$TAG Can't init TelecomManager: $e")
+        if (hasTelecomFeature) {
+            try {
+                callsManager.registerAppWithTelecom(CallsManager.CAPABILITY_SUPPORTS_VIDEO_CALLING)
+                Log.i("$TAG App has been registered with Telecom")
+            } catch (e: Exception) {
+                Log.e("$TAG Can't init TelecomManager: $e")
+            }
         }
     }
 
