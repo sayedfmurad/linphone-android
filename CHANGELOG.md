@@ -10,6 +10,11 @@ Group changes to describe their impact on the project, as follows:
     Fixed for any bug fixes.
     Security to invite users to upgrade in case of vulnerabilities.
 
+## [6.0.23] - 2026-02-02
+
+### Fixed
+- Fixed Telecom Manager not used on devices running Android < 13
+
 ## [6.0.22] - 2026-01-20
 
 ### Changed
