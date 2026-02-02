@@ -100,6 +100,15 @@ class Compatibility {
             )
         }
 
+        fun hasTelecomManagerFeature(context: Context): Boolean {
+            if (Version.sdkAboveOrEqual(Version.API33_ANDROID_13_TIRAMISU)) {
+                return Api33Compatibility.hasTelecomManagerFeature(context)
+            } else if (Version.sdkAboveOrEqual(Version.API26_O_80)) {
+                return Api28Compatibility.hasTelecomManagerFeature(context)
+            }
+            return false
+        }
+
         fun hasFullScreenIntentPermission(context: Context): Boolean {
             if (Version.sdkAboveOrEqual(Version.API34_ANDROID_14_UPSIDE_DOWN_CAKE)) {
                 return Api34Compatibility.hasFullScreenIntentPermission(context)

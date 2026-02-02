@@ -23,6 +23,8 @@ import android.app.Activity
 import android.app.Notification
 import android.app.PictureInPictureParams
 import android.app.Service
+import android.content.Context
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.provider.MediaStore
 import org.linphone.core.tools.Log
@@ -73,6 +75,14 @@ class Api28Compatibility {
                 }
                 else -> Uri.EMPTY
             }
+        }
+
+        fun hasTelecomManagerFeature(context: Context): Boolean {
+            val hasFeature = context.packageManager.hasSystemFeature(
+                PackageManager.FEATURE_CONNECTION_SERVICE
+            )
+            Log.i("$TAG Feature [${PackageManager.FEATURE_CONNECTION_SERVICE}] is [${if (hasFeature) "available" else "not available"}]")
+            return hasFeature
         }
     }
 }
