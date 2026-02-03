@@ -519,7 +519,7 @@ class CoreContext
             Log.i(
                 "$TAG New account configured: [${account.params.identityAddress?.asStringUriOnly()}]"
             )
-            if (!core.isPushNotificationAvailable || !account.params.isPushNotificationAvailable) {
+            if (!account.params.isPushNotificationAvailable) {
                 if (!corePreferences.keepServiceAlive) {
                     Log.w(
                         "$TAG Newly added account (or the whole Core) doesn't support push notifications, enabling keep-alive foreground service..."
