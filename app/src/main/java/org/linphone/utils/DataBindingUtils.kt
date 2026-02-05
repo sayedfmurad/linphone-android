@@ -63,6 +63,7 @@ import coil3.transform.RoundedCornersTransformation
 import coil3.video.videoFrameMillis
 import com.google.android.flexbox.FlexboxLayout
 import org.linphone.BR
+import org.linphone.LinphoneApplication.Companion.coreContext
 import org.linphone.R
 import org.linphone.contacts.AbstractAvatarModel
 import org.linphone.core.ConsolidatedPresence
@@ -250,8 +251,10 @@ fun ImageView.setSourceImageResource(resource: Int) {
 @UiThread
 @BindingAdapter("android:drawableTint")
 fun AppCompatTextView.setDrawableTint(@ColorInt color: Int) {
-    for (drawable in compoundDrawablesRelative) {
-        drawable?.setTint(color)
+    coreContext.postOnMainThread {
+        for (drawable in compoundDrawablesRelative) {
+            drawable?.setTint(color)
+        }
     }
 }
 
