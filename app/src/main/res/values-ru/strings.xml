@@ -486,8 +486,6 @@
     <string name="meeting_schedule_description_title">Описание</string>
     <string name="meeting_schedule_edit_title">Редактировать встречу</string>
     <string name="meeting_cancel_action_label">Отменить встречу</string>
-    <string name="meeting_schedule_delete_dialog_title">Удалить встречу?</string>
-    <string name="meeting_schedule_delete_dialog_message">Вы хотите удалить встречу?</string>
     <string name="meeting_delete_action_label">Удалить встречу</string>
     <string name="meeting_info_updated_toast">Встреча была обновлена</string>
     <string name="meeting_info_cancelled">Встреча отменена</string>

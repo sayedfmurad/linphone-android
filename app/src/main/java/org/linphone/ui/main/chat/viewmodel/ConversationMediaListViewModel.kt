@@ -44,7 +44,7 @@ class ConversationMediaListViewModel
     val operationInProgress = MutableLiveData<Boolean>()
 
     val openMediaEvent: MutableLiveData<Event<FileModel>> by lazy {
-        MutableLiveData<Event<FileModel>>()
+        MutableLiveData()
     }
 
     private var totalMediaCount: Int = -1

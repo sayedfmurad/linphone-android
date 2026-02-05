@@ -53,7 +53,7 @@ class StartConversationViewModel
     val operationInProgress = MutableLiveData<Boolean>()
 
     val chatRoomCreatedEvent: MutableLiveData<Event<String>> by lazy {
-        MutableLiveData<Event<String>>()
+        MutableLiveData()
     }
 
     private val chatRoomListener = object : ChatRoomListenerStub() {

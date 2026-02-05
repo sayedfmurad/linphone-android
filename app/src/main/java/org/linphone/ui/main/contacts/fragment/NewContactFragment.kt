@@ -61,7 +61,7 @@ class NewContactFragment : GenericMainFragment() {
 
     private val backPressedCallback = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
-            showAbortConfirmationDialogIfNeededOrGoBack()
+            showAbortConfirmationDialogIfPendingChanges()
         }
     }
 
@@ -126,7 +126,7 @@ class NewContactFragment : GenericMainFragment() {
         viewModel.findFriendByRefKey("")
 
         binding.setBackClickListener {
-            showAbortConfirmationDialogIfNeededOrGoBack()
+            showAbortConfirmationDialogIfPendingChanges()
         }
 
         binding.setPickImageClickListener {
@@ -217,7 +217,7 @@ class NewContactFragment : GenericMainFragment() {
         pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
     }
 
-    private fun showAbortConfirmationDialogIfNeededOrGoBack() {
+    private fun showAbortConfirmationDialogIfPendingChanges() {
         if (!viewModel.isPendingChanges()) {
             Log.i("$TAG No changes detected, do not show confirmation dialog")
             backPressedCallback.isEnabled = false

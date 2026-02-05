@@ -55,23 +55,23 @@ class DrawerMenuViewModel
     val hideQuitButton = MutableLiveData<Boolean>()
 
     val startAssistantEvent: MutableLiveData<Event<Boolean>> by lazy {
-        MutableLiveData<Event<Boolean>>()
+        MutableLiveData()
     }
 
     val closeDrawerEvent: MutableLiveData<Event<Boolean>> by lazy {
-        MutableLiveData<Event<Boolean>>()
+        MutableLiveData()
     }
 
     val showAccountPopupMenuEvent: MutableLiveData<Event<Pair<View, Account>>> by lazy {
-        MutableLiveData<Event<Pair<View, Account>>>()
+        MutableLiveData()
     }
 
     val defaultAccountChangedEvent: MutableLiveData<Event<String>> by lazy {
-        MutableLiveData<Event<String>>()
+        MutableLiveData()
     }
 
     val openLinkInBrowserEvent: MutableLiveData<Event<String>> by lazy {
-        MutableLiveData<Event<String>>()
+        MutableLiveData()
     }
 
     private val coreListener = object : CoreListenerStub() {

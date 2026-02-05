@@ -61,11 +61,11 @@ class SingleSignOnViewModel
     private var username: String = ""
 
     val startAuthIntentEvent: MutableLiveData<Event<Intent>> by lazy {
-        MutableLiveData<Event<Intent>>()
+        MutableLiveData()
     }
 
     val onErrorEvent: MutableLiveData<Event<String>> by lazy {
-        MutableLiveData<Event<String>>()
+        MutableLiveData()
     }
 
     private lateinit var authState: AuthState

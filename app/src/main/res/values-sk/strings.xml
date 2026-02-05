@@ -566,8 +566,6 @@
     <string name="meeting_schedule_description_title">Popis</string>
     <string name="meeting_schedule_edit_title">Upraviť schôdzku</string>
     <string name="meeting_cancel_action_label">Zrušiť schôdzku</string>
-    <string name="meeting_schedule_delete_dialog_title">Vymazať schôdzku?</string>
-    <string name="meeting_schedule_delete_dialog_message">Želáte si vymazať schôdzku?</string>
     <string name="meeting_delete_action_label">Vymazať schôdzku</string>
     <string name="meeting_info_updated_toast">Schôdzka bola aktualizovaná</string>
     <string name="meeting_info_cancelled_toast">Schôdzka bola zrušená</string>

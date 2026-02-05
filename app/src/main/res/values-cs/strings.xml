@@ -74,8 +74,6 @@
     <string name="conversation_event_security_event_level_downgraded">Úroveň bezpečnosti byla snížena kvůli %s</string>
     <string name="conversation_event_security_event_max_participant_count_exceeded">Maximální počet účastníků byl překročen o %s</string>
     <string name="meeting_schedule_add_more_participants_title">Klepnutím přidat další účastníky</string>
-    <string name="meeting_schedule_delete_dialog_title">Smazat schůzku?</string>
-    <string name="meeting_schedule_delete_dialog_message">Přejete si smazat schůzku?</string>
     <string name="call_zrtp_sas_validation_required">Je vyžadováno ověření</string>
     <string name="call_stats_fec_lost_packets_label">Ztracené pakety: %s</string>
     <string name="call_stats_zrtp_sas_algo">SAS algoritmus: %s</string>

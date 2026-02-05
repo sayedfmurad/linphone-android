@@ -771,8 +771,6 @@
     <string name="meeting_schedule_description_title">Beschrijving</string>
     <string name="meeting_schedule_edit_title">Vergadering bewerken</string>
     <string name="meeting_cancel_action_label">Vergadering annuleren</string>
-    <string name="meeting_schedule_delete_dialog_title">Vergadering verwijderen?</string>
-    <string name="meeting_schedule_delete_dialog_message">Wil je de vergadering verwijderen?</string>
     <string name="meeting_delete_action_label">Vergadering verwijderen</string>
     <string name="meeting_info_created_toast">Vergadering is aangemaakt</string>
     <string name="meeting_info_updated_toast">Vergadering is bijgewerkt</string>

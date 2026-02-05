@@ -102,39 +102,39 @@ class ContactViewModel
     val operationInProgress = MutableLiveData<Boolean>()
 
     val showLongPressMenuForNumberOrAddressEvent: MutableLiveData<Event<ContactNumberOrAddressModel>> by lazy {
-        MutableLiveData<Event<ContactNumberOrAddressModel>>()
+        MutableLiveData()
     }
 
     val showNumberOrAddressPickerDialogEvent: MutableLiveData<Event<Boolean>> by lazy {
-        MutableLiveData<Event<Boolean>>()
+        MutableLiveData()
     }
 
     val openNativeContactEditor: MutableLiveData<Event<String>> by lazy {
-        MutableLiveData<Event<String>>()
+        MutableLiveData()
     }
 
     val openLinphoneContactEditor: MutableLiveData<Event<String>> by lazy {
-        MutableLiveData<Event<String>>()
+        MutableLiveData()
     }
 
     val goToConversationEvent: MutableLiveData<Event<String>> by lazy {
-        MutableLiveData<Event<String>>()
+        MutableLiveData()
     }
 
     val vCardTerminatedEvent: MutableLiveData<Event<Pair<String, File>>> by lazy {
-        MutableLiveData<Event<Pair<String, File>>>()
+        MutableLiveData()
     }
 
     val displayTrustProcessDialogEvent: MutableLiveData<Event<Boolean>> by lazy {
-        MutableLiveData<Event<Boolean>>()
+        MutableLiveData()
     }
 
     val startCallToDeviceToIncreaseTrustEvent: MutableLiveData<Event<Triple<String, String, String>>> by lazy {
-        MutableLiveData<Event<Triple<String, String, String>>>()
+        MutableLiveData()
     }
 
     val contactRemovedEvent: MutableLiveData<Event<Boolean>> by lazy {
-        MutableLiveData<Event<Boolean>>()
+        MutableLiveData()
     }
 
     private var expectedAction: Int = START_AUDIO_CALL

@@ -599,8 +599,6 @@
     <string name="meeting_schedule_description_title">Опис</string>
     <string name="meeting_schedule_edit_title">Редагувати нараду</string>
     <string name="meeting_cancel_action_label">Скасувати нараду</string>
-    <string name="meeting_schedule_delete_dialog_title">Видалити нараду?</string>
-    <string name="meeting_schedule_delete_dialog_message">Ви хочете видалити нараду?</string>
     <string name="meeting_delete_action_label">Видалити нараду</string>
     <string name="meeting_info_created_toast">Нараду створено</string>
     <string name="meeting_info_updated_toast">Нараду оновлено</string>

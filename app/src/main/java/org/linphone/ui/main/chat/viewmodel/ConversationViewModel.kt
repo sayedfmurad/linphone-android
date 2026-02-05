@@ -107,43 +107,43 @@ class ConversationViewModel
     val unreadMessagesCount = MutableLiveData<Int>()
 
     val focusSearchBarEvent: MutableLiveData<Event<Boolean>> by lazy {
-        MutableLiveData<Event<Boolean>>()
+        MutableLiveData()
     }
 
     val fileToDisplayEvent: MutableLiveData<Event<FileModel>> by lazy {
-        MutableLiveData<Event<FileModel>>()
+        MutableLiveData()
     }
 
     val sipUriToCallEvent: MutableLiveData<Event<String>> by lazy {
-        MutableLiveData<Event<String>>()
+        MutableLiveData()
     }
 
     val conferenceToJoinEvent: MutableLiveData<Event<String>> by lazy {
-        MutableLiveData<Event<String>>()
+        MutableLiveData()
     }
 
     val openWebBrowserEvent: MutableLiveData<Event<String>> by lazy {
-        MutableLiveData<Event<String>>()
+        MutableLiveData()
     }
 
     val contactToDisplayEvent: MutableLiveData<Event<String>> by lazy {
-        MutableLiveData<Event<String>>()
+        MutableLiveData()
     }
 
     val messageDeletedEvent: MutableLiveData<Event<Boolean>> by lazy {
-        MutableLiveData<Event<Boolean>>()
+        MutableLiveData()
     }
 
     val updateEvents: MutableLiveData<Event<Boolean>> by lazy {
-        MutableLiveData<Event<Boolean>>()
+        MutableLiveData()
     }
 
     val forwardMessageEvent: MutableLiveData<Event<MessageModel>> by lazy {
-        MutableLiveData<Event<MessageModel>>()
+        MutableLiveData()
     }
 
     val voiceRecordPlaybackEndedEvent: MutableLiveData<Event<String>> by lazy {
-        MutableLiveData<Event<String>>()
+        MutableLiveData()
     }
 
     var eventsList = arrayListOf<EventLogModel>()

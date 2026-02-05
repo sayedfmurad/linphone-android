@@ -64,11 +64,11 @@ class CardDavViewModel
     var pendingAuthInfo: AuthInfo? = null
 
     val syncSuccessfulEvent: MutableLiveData<Event<Boolean>> by lazy {
-        MutableLiveData<Event<Boolean>>()
+        MutableLiveData()
     }
 
     val friendListRemovedEvent: MutableLiveData<Event<Boolean>> by lazy {
-        MutableLiveData<Event<Boolean>>()
+        MutableLiveData()
     }
 
     private lateinit var friendList: FriendList

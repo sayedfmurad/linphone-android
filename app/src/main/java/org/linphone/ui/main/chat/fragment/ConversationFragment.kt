@@ -886,7 +886,7 @@ open class ConversationFragment : SlidingPaneChildFragment() {
                     "$TAG Scrolling to message/event at position [$position], " +
                         "display show events between positions [$firstDisplayedItemPosition] and [$lastDisplayedItemPosition]"
                 )
-                if (firstDisplayedItemPosition > position && position > 0) {
+                if (position in 1..<firstDisplayedItemPosition) {
                     recyclerView.scrollToPosition(position - 1)
                 } else if (lastDisplayedItemPosition < position && position < layoutManager.itemCount - 1) {
                     recyclerView.scrollToPosition(position + 1)

@@ -105,7 +105,7 @@ class AccountCreationViewModel
     val accountCreatedEvent = MutableLiveData<Event<Boolean>>()
 
     val accountRecoveryTokenReceivedEvent: MutableLiveData<Event<String>> by lazy {
-        MutableLiveData<Event<String>>()
+        MutableLiveData()
     }
 
     private var waitingForFlexiApiPushToken = false

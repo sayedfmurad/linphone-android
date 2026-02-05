@@ -66,11 +66,11 @@ class SettingsViewModel
     val isTunnelAvailable = MutableLiveData<Boolean>()
 
     val recreateActivityEvent: MutableLiveData<Event<Boolean>> by lazy {
-        MutableLiveData<Event<Boolean>>()
+        MutableLiveData()
     }
 
     val keepAliveServiceSettingChangedEvent: MutableLiveData<Event<Boolean>> by lazy {
-        MutableLiveData<Event<Boolean>>()
+        MutableLiveData()
     }
 
     // Security settings
@@ -124,18 +124,18 @@ class SettingsViewModel
     val presenceSubscribe = MutableLiveData<Boolean>()
 
     val addLdapServerEvent: MutableLiveData<Event<Boolean>> by lazy {
-        MutableLiveData<Event<Boolean>>()
+        MutableLiveData()
     }
     val editLdapServerEvent: MutableLiveData<Event<String>> by lazy {
-        MutableLiveData<Event<String>>()
+        MutableLiveData()
     }
 
     val addCardDavServerEvent: MutableLiveData<Event<Boolean>> by lazy {
-        MutableLiveData<Event<Boolean>>()
+        MutableLiveData()
     }
 
     val editCardDavServerEvent: MutableLiveData<Event<String>> by lazy {
-        MutableLiveData<Event<String>>()
+        MutableLiveData()
     }
 
     // Meetings settings

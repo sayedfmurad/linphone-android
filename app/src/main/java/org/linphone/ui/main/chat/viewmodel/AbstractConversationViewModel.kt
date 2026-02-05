@@ -42,11 +42,11 @@ abstract class AbstractConversationViewModel : GenericViewModel() {
     }
 
     val chatRoomFoundEvent: MutableLiveData<Event<Boolean>> by lazy {
-        MutableLiveData<Event<Boolean>>()
+        MutableLiveData()
     }
 
     val confirmGroupCallEvent: MutableLiveData<Event<Boolean>> by lazy {
-        MutableLiveData<Event<Boolean>>()
+        MutableLiveData()
     }
 
     lateinit var chatRoom: ChatRoom

@@ -85,23 +85,23 @@ class ConversationInfoViewModel
     val disableAddContact = MutableLiveData<Boolean>()
 
     val groupLeftEvent: MutableLiveData<Event<Boolean>> by lazy {
-        MutableLiveData<Event<Boolean>>()
+        MutableLiveData()
     }
 
     val historyDeletedEvent: MutableLiveData<Event<Boolean>> by lazy {
-        MutableLiveData<Event<Boolean>>()
+        MutableLiveData()
     }
 
     val infoChangedEvent: MutableLiveData<Event<Boolean>> by lazy {
-        MutableLiveData<Event<Boolean>>()
+        MutableLiveData()
     }
 
     val showParticipantAdminPopupMenuEvent: MutableLiveData<Event<Pair<View, ParticipantModel>>> by lazy {
-        MutableLiveData<Event<Pair<View, ParticipantModel>>>()
+        MutableLiveData()
     }
 
     val goToScheduleMeetingEvent: MutableLiveData<Event<Pair<String, ArrayList<String>>>> by lazy {
-        MutableLiveData<Event<Pair<String, ArrayList<String>>>>()
+        MutableLiveData()
     }
 
     private val chatRoomListener = object : ChatRoomListenerStub() {

@@ -37,15 +37,15 @@ class HistoryListAdapter : ListAdapter<CallLogModel, RecyclerView.ViewHolder>(Ca
     var selectedAdapterPosition = -1
 
     val callLogClickedEvent: MutableLiveData<Event<CallLogModel>> by lazy {
-        MutableLiveData<Event<CallLogModel>>()
+        MutableLiveData()
     }
 
     val callLogLongClickedEvent: MutableLiveData<Event<CallLogModel>> by lazy {
-        MutableLiveData<Event<CallLogModel>>()
+        MutableLiveData()
     }
 
     val callLogCallBackClickedEvent: MutableLiveData<Event<CallLogModel>> by lazy {
-        MutableLiveData<Event<CallLogModel>>()
+        MutableLiveData()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {

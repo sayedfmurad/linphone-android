@@ -38,11 +38,11 @@ class CallsListAdapter :
     var selectedAdapterPosition = -1
 
     val callClickedEvent: MutableLiveData<Event<CallModel>> by lazy {
-        MutableLiveData<Event<CallModel>>()
+        MutableLiveData()
     }
 
     val callLongClickedEvent: MutableLiveData<Event<CallModel>> by lazy {
-        MutableLiveData<Event<CallModel>>()
+        MutableLiveData()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {

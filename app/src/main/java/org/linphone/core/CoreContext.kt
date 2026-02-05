@@ -96,40 +96,40 @@ class CoreContext
     var isConnectedToAndroidAuto: Boolean = false
 
     val bearerAuthenticationRequestedEvent: MutableLiveData<Event<Pair<String, String?>>> by lazy {
-        MutableLiveData<Event<Pair<String, String?>>>()
+        MutableLiveData()
     }
 
     val digestAuthenticationRequestedEvent: MutableLiveData<Event<String>> by lazy {
-        MutableLiveData<Event<String>>()
+        MutableLiveData()
     }
 
     val clearAuthenticationRequestDialogEvent: MutableLiveData<Event<Boolean>> by lazy {
-        MutableLiveData<Event<Boolean>>()
+        MutableLiveData()
     }
 
     val refreshMicrophoneMuteStateEvent: MutableLiveData<Event<Boolean>> by lazy {
-        MutableLiveData<Event<Boolean>>()
+        MutableLiveData()
     }
 
     val showGreenToastEvent: MutableLiveData<Event<Pair<Int, Int>>> by lazy {
-        MutableLiveData<Event<Pair<Int, Int>>>()
+        MutableLiveData()
     }
 
     val showRedToastEvent: MutableLiveData<Event<Pair<Int, Int>>> by lazy {
-        MutableLiveData<Event<Pair<Int, Int>>>()
+        MutableLiveData()
     }
 
     val showFormattedRedToastEvent: MutableLiveData<Event<Pair<String, Int>>> by lazy {
-        MutableLiveData<Event<Pair<String, Int>>>()
+        MutableLiveData()
     }
 
     val provisioningAppliedEvent: MutableLiveData<Event<Boolean>> by lazy {
-        MutableLiveData<Event<Boolean>>()
+        MutableLiveData()
     }
 
     private var filesToExportToNativeMediaGallery = arrayListOf<String>()
     val filesToExportToNativeMediaGalleryEvent: MutableLiveData<Event<List<String>>> by lazy {
-        MutableLiveData<Event<List<String>>>()
+        MutableLiveData()
     }
 
     private var keepAliveServiceStarted = false

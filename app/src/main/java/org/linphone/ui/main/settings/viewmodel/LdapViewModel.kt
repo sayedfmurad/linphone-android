@@ -68,7 +68,7 @@ class LdapViewModel : GenericViewModel() {
     val verboseMode = MutableLiveData<Boolean>()
 
     val ldapServerOperationSuccessfulEvent: MutableLiveData<Event<Boolean>> by lazy {
-        MutableLiveData<Event<Boolean>>()
+        MutableLiveData()
     }
 
     private lateinit var ldapToEdit: Ldap

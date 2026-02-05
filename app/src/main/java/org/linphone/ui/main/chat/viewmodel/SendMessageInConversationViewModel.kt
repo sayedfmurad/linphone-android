@@ -120,23 +120,23 @@ class SendMessageInConversationViewModel
     }
 
     val requestKeyboardHidingEvent: MutableLiveData<Event<Boolean>> by lazy {
-        MutableLiveData<Event<Boolean>>()
+        MutableLiveData()
     }
 
     val emojiToAddEvent: MutableLiveData<Event<String>> by lazy {
-        MutableLiveData<Event<String>>()
+        MutableLiveData()
     }
 
     val participantUsernameToAddEvent: MutableLiveData<Event<String>> by lazy {
-        MutableLiveData<Event<String>>()
+        MutableLiveData()
     }
 
     val askRecordAudioPermissionEvent: MutableLiveData<Event<Boolean>> by lazy {
-        MutableLiveData<Event<Boolean>>()
+        MutableLiveData()
     }
 
     val messageSentEvent: MutableLiveData<Event<ChatMessage>> by lazy {
-        MutableLiveData<Event<ChatMessage>>()
+        MutableLiveData()
     }
 
     lateinit var chatRoom: ChatRoom

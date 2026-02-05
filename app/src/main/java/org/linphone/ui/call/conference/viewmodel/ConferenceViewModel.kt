@@ -83,19 +83,19 @@ class ConferenceViewModel
     val fullScreenMode = MutableLiveData<Boolean>()
 
     val firstParticipantOtherThanOurselvesJoinedEvent: MutableLiveData<Event<Boolean>> by lazy {
-        MutableLiveData<Event<Boolean>>()
+        MutableLiveData()
     }
 
     val showLayoutMenuEvent: MutableLiveData<Event<Boolean>> by lazy {
-        MutableLiveData<Event<Boolean>>()
+        MutableLiveData()
     }
 
     val removeParticipantEvent: MutableLiveData<Event<Pair<String, Participant>>> by lazy {
-        MutableLiveData<Event<Pair<String, Participant>>>()
+        MutableLiveData()
     }
 
     val goToConversationEvent: MutableLiveData<Event<String>> by lazy {
-        MutableLiveData<Event<String>>()
+        MutableLiveData()
     }
 
     private lateinit var conference: Conference

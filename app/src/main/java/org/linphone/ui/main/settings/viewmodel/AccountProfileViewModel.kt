@@ -89,7 +89,7 @@ class AccountProfileViewModel
     val showDeviceId = MutableLiveData<Boolean>()
 
     val accountRemovedEvent: MutableLiveData<Event<Boolean>> by lazy {
-        MutableLiveData<Event<Boolean>>()
+        MutableLiveData()
     }
 
     private lateinit var account: Account

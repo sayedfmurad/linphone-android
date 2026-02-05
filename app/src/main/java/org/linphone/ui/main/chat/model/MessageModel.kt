@@ -191,7 +191,7 @@ class MessageModel
     val formattedVoiceRecordingDuration = MutableLiveData<String>()
 
     val dismissLongPressMenuEvent: MutableLiveData<Event<Boolean>> by lazy {
-        MutableLiveData<Event<Boolean>>()
+        MutableLiveData()
     }
 
     var isTextHighlighted = false

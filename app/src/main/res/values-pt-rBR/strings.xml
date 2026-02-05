@@ -504,8 +504,6 @@
     <string name="meeting_schedule_description_title">Descrição</string>
     <string name="meeting_schedule_edit_title">Editar reunião</string>
     <string name="meeting_cancel_action_label">Cancelar reunião</string>
-    <string name="meeting_schedule_delete_dialog_title">Excluir a reunião?</string>
-    <string name="meeting_schedule_delete_dialog_message">Você quer excluir a reunião?</string>
     <string name="meeting_delete_action_label">Excluir reunião</string>
     <string name="meeting_info_created_toast">A reunião foi criada</string>
     <string name="meeting_info_updated_toast">A reunião foi atualizada</string>

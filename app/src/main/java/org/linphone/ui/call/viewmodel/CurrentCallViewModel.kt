@@ -151,7 +151,7 @@ class CurrentCallViewModel
     }
 
     val incomingCallTitle: MutableLiveData<String> by lazy {
-        MutableLiveData<String>()
+        MutableLiveData()
     }
 
     val qualityValue = MutableLiveData<Float>()
@@ -163,23 +163,23 @@ class CurrentCallViewModel
     var terminatedByUser = false
 
     val isRemoteRecordingEvent: MutableLiveData<Event<Pair<Boolean, String>>> by lazy {
-        MutableLiveData<Event<Pair<Boolean, String>>>()
+        MutableLiveData()
     }
 
     val goToEndedCallEvent: MutableLiveData<Event<String>> by lazy {
-        MutableLiveData<Event<String>>()
+        MutableLiveData()
     }
 
     val finishActivityEvent: MutableLiveData<Event<Boolean>> by lazy {
-        MutableLiveData<Event<Boolean>>()
+        MutableLiveData()
     }
 
     val requestRecordAudioPermission: MutableLiveData<Event<Boolean>> by lazy {
-        MutableLiveData<Event<Boolean>>()
+        MutableLiveData()
     }
 
     val requestCameraPermission: MutableLiveData<Event<Boolean>> by lazy {
-        MutableLiveData<Event<Boolean>>()
+        MutableLiveData()
     }
 
     val proximitySensorEnabled = MutableLiveData<Boolean>()
@@ -188,21 +188,21 @@ class CurrentCallViewModel
     val callDuration = MutableLiveData<Int>()
 
     val showAudioDevicesListEvent: MutableLiveData<Event<ArrayList<AudioDeviceModel>>> by lazy {
-        MutableLiveData<Event<ArrayList<AudioDeviceModel>>>()
+        MutableLiveData()
     }
 
     // ZRTP related
 
     val showZrtpSasDialogEvent: MutableLiveData<Event<Pair<String, List<String>>>> by lazy {
-        MutableLiveData<Event<Pair<String, List<String>>>>()
+        MutableLiveData()
     }
 
     val showZrtpSasCacheMismatchDialogEvent: MutableLiveData<Event<Pair<String, List<String>>>> by lazy {
-        MutableLiveData<Event<Pair<String, List<String>>>>()
+        MutableLiveData()
     }
 
     val zrtpAuthTokenVerifiedEvent: MutableLiveData<Event<Boolean>> by lazy {
-        MutableLiveData<Event<Boolean>>()
+        MutableLiveData()
     }
 
     var isZrtpDialogVisible: Boolean = false
@@ -217,7 +217,7 @@ class CurrentCallViewModel
     val operationInProgress = MutableLiveData<Boolean>()
 
     val goToConversationEvent: MutableLiveData<Event<String>> by lazy {
-        MutableLiveData<Event<String>>()
+        MutableLiveData()
     }
 
     // Conference
@@ -225,39 +225,39 @@ class CurrentCallViewModel
     val conferenceModel = ConferenceViewModel()
 
     val goToConferenceEvent: MutableLiveData<Event<Boolean>> by lazy {
-        MutableLiveData<Event<Boolean>>()
+        MutableLiveData()
     }
 
     val goToCallEvent: MutableLiveData<Event<Boolean>> by lazy {
-        MutableLiveData<Event<Boolean>>()
+        MutableLiveData()
     }
 
     // Extras actions
 
     val toggleExtraActionsBottomSheetEvent: MutableLiveData<Event<Boolean>> by lazy {
-        MutableLiveData<Event<Boolean>>()
+        MutableLiveData()
     }
 
     val showNumpadBottomSheetEvent: MutableLiveData<Event<Boolean>> by lazy {
-        MutableLiveData<Event<Boolean>>()
+        MutableLiveData()
     }
 
     val transferInProgressEvent: MutableLiveData<Event<Boolean>> by lazy {
-        MutableLiveData<Event<Boolean>>()
+        MutableLiveData()
     }
 
     val transferFailedEvent: MutableLiveData<Event<Boolean>> by lazy {
-        MutableLiveData<Event<Boolean>>()
+        MutableLiveData()
     }
 
     val numpadModel: NumpadModel
 
     val appendDigitToSearchBarEvent: MutableLiveData<Event<String>> by lazy {
-        MutableLiveData<Event<String>>()
+        MutableLiveData()
     }
 
     val removedCharacterAtCurrentPositionEvent: MutableLiveData<Event<Boolean>> by lazy {
-        MutableLiveData<Event<Boolean>>()
+        MutableLiveData()
     }
 
     // Sliding answer/decline button

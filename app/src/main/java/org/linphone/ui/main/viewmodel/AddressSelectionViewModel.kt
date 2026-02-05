@@ -71,11 +71,11 @@ abstract class AddressSelectionViewModel
     val showResultsLimitReached = MutableLiveData<Boolean>()
 
     val showNumberOrAddressPickerDialogEvent: MutableLiveData<Event<List<ContactNumberOrAddressModel>>> by lazy {
-        MutableLiveData<Event<List<ContactNumberOrAddressModel>>>()
+        MutableLiveData()
     }
 
     val dismissNumberOrAddressPickerDialogEvent: MutableLiveData<Event<Boolean>> by lazy {
-        MutableLiveData<Event<Boolean>>()
+        MutableLiveData()
     }
 
     protected var magicSearchSourceFlags = MagicSearch.Source.All.toInt()

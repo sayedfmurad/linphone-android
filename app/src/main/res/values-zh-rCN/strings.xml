@@ -531,8 +531,6 @@
     <string name="meeting_schedule_description_title">描述</string>
     <string name="meeting_schedule_edit_title">编辑会议</string>
     <string name="meeting_cancel_action_label">取消会议</string>
-    <string name="meeting_schedule_delete_dialog_title">删除会议？</string>
-    <string name="meeting_schedule_delete_dialog_message">您想删除会议吗？</string>
     <string name="meeting_delete_action_label">删除会议</string>
     <string name="meeting_info_created_toast">会议已创建</string>
     <string name="meeting_info_updated_toast">会议已更新</string>

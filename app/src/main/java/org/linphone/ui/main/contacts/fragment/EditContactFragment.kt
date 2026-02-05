@@ -64,7 +64,7 @@ class EditContactFragment : SlidingPaneChildFragment() {
 
     private val backPressedCallback = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
-            showAbortConfirmationDialog()
+            showAbortConfirmationDialogIfPendingChanges()
         }
     }
 
@@ -121,7 +121,7 @@ class EditContactFragment : SlidingPaneChildFragment() {
         viewModel.findFriendByRefKey(refKey)
 
         binding.setBackClickListener {
-            showAbortConfirmationDialog()
+            showAbortConfirmationDialogIfPendingChanges()
         }
 
         binding.setPickImageClickListener {
@@ -215,7 +215,7 @@ class EditContactFragment : SlidingPaneChildFragment() {
         pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
     }
 
-    private fun showAbortConfirmationDialog() {
+    private fun showAbortConfirmationDialogIfPendingChanges() {
         if (!viewModel.isPendingChanges()) {
             Log.i("$TAG No changes detected, do not show confirmation dialog")
             backPressedCallback.isEnabled = false

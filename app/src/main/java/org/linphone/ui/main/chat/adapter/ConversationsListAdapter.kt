@@ -41,11 +41,11 @@ class ConversationsListAdapter : ListAdapter<ConversationModel, RecyclerView.Vie
     var selectedAdapterPosition = -1
 
     val conversationClickedEvent: MutableLiveData<Event<ConversationModel>> by lazy {
-        MutableLiveData<Event<ConversationModel>>()
+        MutableLiveData()
     }
 
     val conversationLongClickedEvent: MutableLiveData<Event<ConversationModel>> by lazy {
-        MutableLiveData<Event<ConversationModel>>()
+        MutableLiveData()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {

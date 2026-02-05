@@ -74,11 +74,11 @@ class ContactsListViewModel
     val disableAddContact = MutableLiveData<Boolean>()
 
     val vCardTerminatedEvent: MutableLiveData<Event<Pair<String, File>>> by lazy {
-        MutableLiveData<Event<Pair<String, File>>>()
+        MutableLiveData()
     }
 
     val cardDavSynchronizationCompletedEvent: MutableLiveData<Event<Boolean>> by lazy {
-        MutableLiveData<Event<Boolean>>()
+        MutableLiveData()
     }
 
     private var previousFilter = "NotSet"

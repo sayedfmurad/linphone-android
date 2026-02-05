@@ -819,8 +819,6 @@
     <string name="conversation_event_security_event_level_downgraded">Sicherheitsstufe verringert wegen %s</string>
     <string name="conversation_event_security_event_max_participant_count_exceeded">Maximale Teilnehmerzahl um %s überschritten</string>
     <string name="meeting_cancel_action_label">Besprechung absagen</string>
-    <string name="meeting_schedule_delete_dialog_title">Besprechung löschen?</string>
-    <string name="meeting_schedule_delete_dialog_message">Möchten Sie die Besprechung löschen?</string>
     <string name="assistant_forgotten_password_title">Passwort vergessen</string>
     <string name="assistant_forgotten_password_message">Sie haben Ihren Account erstellt mit:</string>
     <string name="assistant_account_register_unavailable_no_push_warning">Benachrichtigungen scheinen auf Ihrem Gerät nicht verfügbar zu sein, sind allerdings nötig um einen Account in der App zu erstellen.\n\nWir laden Sie ein, stattdessen einen Account auf unserer Webplattform zu erstellen:</string>

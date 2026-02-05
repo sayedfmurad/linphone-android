@@ -18,13 +18,11 @@
     <string name="yesterday">Wczoraj</string>
     <plurals name="days">
         <item quantity="one">%s dzień</item>
-        <item quantity="few"></item>
         <item quantity="many">%s dni</item>
         <item quantity="other">%s dni</item>
     </plurals>
     <plurals name="selection_count_label">
         <item quantity="one">%s wybrany</item>
-        <item quantity="few"></item>
         <item quantity="many">%s wybranych</item>
         <item quantity="other">%s wybranych</item>
     </plurals>
@@ -55,13 +53,11 @@
     <string name="notification_file_transfer_startup_message">Trwa przesyłanie plików</string>
     <plurals name="notification_file_transfer_upload">
         <item quantity="one">%s plik jest przesyłany</item>
-        <item quantity="few"></item>
         <item quantity="many">%s plików jest przesyłanych</item>
         <item quantity="other">%s plików jest przesyłanych</item>
     </plurals>
     <plurals name="notification_file_transfer_download">
         <item quantity="one">%s plik jest pobierany</item>
-        <item quantity="few"></item>
         <item quantity="many">%s plików jest pobieranych</item>
         <item quantity="other">%s plików jest pobieranych</item>
     </plurals>
@@ -107,7 +103,7 @@
     <string name="assistant_create_account_using_email_on_our_web_platform">Załóż konto, podając swój adres e-mail na stronie:</string>
     <string name="assistant_already_have_an_account">Masz już konto?</string>
     <string name="assistant_sip_account_transport_protocol">Transport</string>
-    <string name="assistant_third_party_sip_account_warning_explanation">Niektóre funkcje wymagają konta &appName;, np. wiadomości grupowe, wideokonferencje...\n\nFunkcje te są ukryte, gdy rejestrujesz się za pomocą konta SIP innej firmy.\n\nAby włączyć je w projekcie komercyjnym, skontaktuj się z nami.</string>
+    <string name="assistant_third_party_sip_account_warning_explanation">Niektóre funkcje wymagają konta &appName;, np. wiadomości grupowe, wideokonferencje…\n\nFunkcje te są ukryte, gdy rejestrujesz się za pomocą konta SIP innej firmy.\n\nAby włączyć je w projekcie komercyjnym, skontaktuj się z nami.</string>
     <string name="assistant_third_party_sip_account_create_linphone_account">Wolę utworzyć konto &appName;</string>
     <string name="assistant_third_party_sip_account_warning_ok">Zrozumiałem</string>
     <string name="assistant_account_register_unavailable_no_push_warning">Powiadomienia push nie wydają się być dostępne na Twoim urządzeniu, ale są one obowiązkowe do utworzenia konta w aplikacji mobilnej.\n\nZapraszamy do utworzenia konta na naszej platformie internetowej:</string>

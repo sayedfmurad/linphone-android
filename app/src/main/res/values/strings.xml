@@ -701,8 +701,6 @@
     <string name="meeting_schedule_notify_cancel_dialog_title">Meeting will be cancelled</string>
     <string name="meeting_schedule_notify_cancel_dialog_message">Do you want to send a notification to all participants?</string>
     <string name="meeting_cancel_action_label">Cancel meeting</string>
-    <string name="meeting_schedule_delete_dialog_title">Delete the meeting?</string>
-    <string name="meeting_schedule_delete_dialog_message">Do you want to delete the meeting?</string>
     <string name="meeting_delete_action_label">Delete meeting</string>
     <string name="meeting_info_created_toast">Meeting has been created</string>
     <string name="meeting_info_updated_toast">Meeting has been updated</string>

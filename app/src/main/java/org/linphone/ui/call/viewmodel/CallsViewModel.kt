@@ -64,7 +64,7 @@ class CallsViewModel
     val callsTopBarStatus = MutableLiveData<String>()
 
     val goToCallsListEvent: MutableLiveData<Event<Boolean>> by lazy {
-        MutableLiveData<Event<Boolean>>()
+        MutableLiveData()
     }
 
     private val coreListener = object : CoreListenerStub() {
