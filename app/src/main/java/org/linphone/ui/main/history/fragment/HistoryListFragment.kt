@@ -267,7 +267,8 @@ class HistoryListFragment : AbstractMainFragment() {
 
         sharedViewModel.forceRefreshCallLogsListEvent.observe(viewLifecycleOwner) {
             it.consume {
-                listViewModel.applyFilter()
+                Log.i("$TAG Re-compute call log history")
+                listViewModel.filter()
             }
         }
 
