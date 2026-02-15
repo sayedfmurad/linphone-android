@@ -205,8 +205,14 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_21
-        targetCompatibility = JavaVersion.VERSION_21
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+
+    tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+        compilerOptions {
+            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
+        }
     }
 
     buildFeatures {
@@ -326,5 +332,17 @@ if (crashlyticsAvailable) {
         tasks.getByName("packageRelease").finalizedBy(
             tasks.getByName("uploadCrashlyticsSymbolFileRelease"),
         )
+    }
+}
+configurations.all {
+    resolutionStrategy.eachDependency {
+        if (requested.group == "androidx.core" && requested.name == "core-ktx") {
+            useVersion("1.15.0")
+            because("Transitive dependencies require core-ktx 1.17.0 which requires AGP 8.9.1+")
+        }
+        if (requested.group == "androidx.core" && requested.name == "core") {
+            useVersion("1.15.0")
+            because("Transitive dependencies require core 1.17.0 which requires AGP 8.9.1+")
+        }
     }
 }
