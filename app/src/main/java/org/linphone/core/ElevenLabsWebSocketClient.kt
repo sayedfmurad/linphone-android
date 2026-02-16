@@ -101,9 +101,15 @@ class ElevenLabsWebSocketClient(
                 // Handle interruption (clear audio buffer)
             }
             "ping" -> {
+                val pingEvent = message.get("ping_event")?.asJsonObject
+                val eventId = pingEvent?.get("event_id")?.asInt
+                
                 val pong = JsonObject()
                 pong.addProperty("type", "pong")
-                 webSocket?.send(gson.toJson(pong))
+                if (eventId != null) {
+                    pong.addProperty("event_id", eventId)
+                }
+                webSocket?.send(gson.toJson(pong))
             }
             else -> {
                  Log.d(TAG, "Unknown message type: $type")
@@ -114,14 +120,10 @@ class ElevenLabsWebSocketClient(
     fun sendAudio(audioData: ByteArray) {
         if (webSocket == null) return
         
-        val userAudioEvent = JsonObject()
-        userAudioEvent.addProperty("user_audio_chunk", android.util.Base64.encodeToString(audioData, android.util.Base64.NO_WRAP))
-        
         val message = JsonObject()
-        message.addProperty("type", "user_audio_chunk")
+        // Correct format: just {"user_audio_chunk": "base64String"}
         message.addProperty("user_audio_chunk", android.util.Base64.encodeToString(audioData, android.util.Base64.NO_WRAP))
 
-        // ElevenLabs expects JSON with base64 audio for user input
         webSocket?.send(gson.toJson(message))
     }
 
