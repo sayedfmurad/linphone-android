@@ -56,7 +56,7 @@
                 android:layout_marginEnd="10dp"
                 android:text="@string/call_action_start_new_call"
                 app:layout_constraintBottom_toBottomOf="@id/back"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/connect_agent"
                 app:layout_constraintStart_toEndOf="@id/back"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -284,6 +284,19 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/group_call_icon"
                 app:layout_constraintBottom_toBottomOf="parent" />
+
+
+            <ImageView
+                style="@style/icon_top_bar_button_style"
+                android:id="@+id/connect_agent"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/top_bar_height"
+                android:src="@drawable/assistant"
+                android:onClick="@{() -> viewModel.connectToElevenLabsAgent()}"
+                android:contentDescription="Connect to Agent"
+                app:tint="?attr/color_main1_500"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/create_group"

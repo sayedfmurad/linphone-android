@@ -248,4 +248,11 @@ class StartCallViewModel
             }
         }
     }
+
+    @UiThread
+    fun connectToElevenLabsAgent() {
+        coreContext.postOnCoreThread { core ->
+            org.linphone.core.ElevenLabsService.connectToAgent(core)
+        }
+    }
 }

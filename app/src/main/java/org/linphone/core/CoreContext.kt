@@ -99,6 +99,9 @@ class CoreContext
         MutableLiveData<Event<Pair<String, String?>>>()
     }
 
+    // ElevenLabs Integration
+    private val elevenLabsHandlers = mutableMapOf<Call, ElevenLabsCallHandler>()
+
     val digestAuthenticationRequestedEvent: MutableLiveData<Event<String>> by lazy {
         MutableLiveData<Event<String>>()
     }
@@ -307,10 +310,26 @@ class CoreContext
         override fun onCallStateChanged(
             core: Core,
             call: Call,
-            state: Call.State?,
+            state: Call.State,
             message: String
         ) {
+            // ElevenLabs Integration
+            if (call.remoteAddress.domain == "sip.rtc.elevenlabs.io") {
+                val agentId = call.remoteAddress.username ?: ""
+                var handler = elevenLabsHandlers[call]
+                if (handler == null && (state == Call.State.OutgoingInit || state == Call.State.OutgoingProgress)) {
+                    handler = ElevenLabsCallHandler(core, call, agentId)
+                    elevenLabsHandlers[call] = handler
+                }
+                handler?.handleCallState(state)
+                
+                if (state == Call.State.End || state == Call.State.Error || state == Call.State.Released) {
+                    elevenLabsHandlers.remove(call)
+                }
+            }
+
             val currentState = call.state
+
             Log.i(
                 "$TAG Call [${call.remoteAddress.asStringUriOnly()}] state changed [$currentState]"
             )
@@ -925,6 +944,14 @@ class CoreContext
 
         if (forceZRTP) {
             params.mediaEncryption = MediaEncryption.ZRTP
+        }
+        
+        // ElevenLabs specific configuration
+        if (address.domain == "sip.rtc.elevenlabs.io") {
+            Log.i(TAG, "Disabling media encryption for ElevenLabs call")
+            params.mediaEncryption = MediaEncryption.None
+            // Also ensure we are not forcing AVPF if unnecessary, though Linphone defaults are usually fine.
+            // params.avpfEnabled = false // Uncomment if AVPF is causing issues
         }
 
         params.recordFile = LinphoneUtils.getRecordingFilePathForAddress(address)
