@@ -26,8 +26,8 @@ class ElevenLabsCallBridge(private val context: Context) {
         // 20ms chunk = 640 bytes at 16kHz 16-bit mono
         private const val CHUNK_MS = 20L
         private const val CHUNK_BYTES = (SAMPLE_RATE * BLOCK_ALIGN * CHUNK_MS / 1000).toInt() // 640
-        // Pre-buffer: 1 second of silence written ahead so MSFilePlayer never catches up
-        private const val PRE_BUFFER_BYTES = SAMPLE_RATE * BLOCK_ALIGN // 32000
+        // Pre-buffer: 200ms of silence written ahead so MSFilePlayer never catches up
+        private const val PRE_BUFFER_BYTES = SAMPLE_RATE * BLOCK_ALIGN / 5 // 6400 (200ms)
     }
 
     var toneFilePath: String? = null
@@ -162,21 +162,25 @@ class ElevenLabsCallBridge(private val context: Context) {
             Log.i(TAG, "Writer thread started (${CHUNK_MS}ms chunks, ${CHUNK_BYTES} bytes each)")
             try {
                 while (isRunning) {
-                    val agentData = agentAudioQueue.poll()
                     val fos = agentFileOutputStream ?: break
 
-                    if (agentData != null) {
-                        // Write agent audio
+                    // Drain all queued agent audio chunks first (no sleep between them)
+                    var wrote = false
+                    var agentData = agentAudioQueue.poll()
+                    while (agentData != null) {
                         fos.write(agentData)
-                        fos.flush()
                         agentDataBytesWritten += agentData.size
-                    } else {
-                        // Write silence to keep the file growing at playback rate
+                        wrote = true
+                        agentData = agentAudioQueue.poll()
+                    }
+
+                    if (!wrote) {
+                        // No agent data — write silence to keep file growing
                         fos.write(silence)
-                        fos.flush()
                         agentDataBytesWritten += silence.size
                     }
 
+                    fos.flush() // Single flush after all writes
                     Thread.sleep(CHUNK_MS)
                 }
             } catch (e: InterruptedException) {
@@ -268,7 +272,7 @@ class ElevenLabsCallBridge(private val context: Context) {
                             totalChunksSent++
                         }
                     } else {
-                        Thread.sleep(10)
+                        Thread.sleep(2)
                     }
 
                     // Log diagnostics every 5 seconds
