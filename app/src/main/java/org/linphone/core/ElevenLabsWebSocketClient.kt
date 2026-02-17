@@ -16,6 +16,7 @@ class ElevenLabsWebSocketClient(
     private val onConnected: () -> Unit,
     private val onAudioReceived: (ByteArray) -> Unit,
     private val onAgentResponse: (String) -> Unit,
+    private val onInterruption: () -> Unit,
     private val onError: (Throwable) -> Unit
 ) {
     companion object {
@@ -100,8 +101,8 @@ class ElevenLabsWebSocketClient(
                  }
             }
              "interruption" -> {
-                Log.i(TAG, "Interruption event")
-                // Handle interruption (clear audio buffer)
+                Log.i(TAG, "Interruption event, clearing audio buffers")
+                onInterruption()
             }
             "ping" -> {
                 val pingEvent = message.get("ping_event")?.asJsonObject

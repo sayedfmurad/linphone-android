@@ -397,8 +397,8 @@ class CoreContext
                                 Log.i("$TAG Setting core.recordFile=$recordPath")
                                 core.recordFile = recordPath
                             }
-                            Log.i("$TAG Starting ElevenLabs agent WAV bridge")
-                            ElevenLabsService.startBridge(core)
+                            Log.i("$TAG Starting ElevenLabs audio bridge (file reader + playFile swap)")
+                            ElevenLabsService.startAudioBridge(core)
                         }
                     }
                 }

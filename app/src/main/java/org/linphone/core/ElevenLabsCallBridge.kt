@@ -26,8 +26,8 @@ class ElevenLabsCallBridge(private val context: Context) {
         // 20ms chunk = 640 bytes at 16kHz 16-bit mono
         private const val CHUNK_MS = 20L
         private const val CHUNK_BYTES = (SAMPLE_RATE * BLOCK_ALIGN * CHUNK_MS / 1000).toInt() // 640
-        // Pre-buffer: 200ms of silence written ahead so MSFilePlayer never catches up
-        private const val PRE_BUFFER_BYTES = SAMPLE_RATE * BLOCK_ALIGN / 5 // 6400 (200ms)
+        // Pre-buffer: 40ms of silence written ahead so MSFilePlayer never catches up
+        private const val PRE_BUFFER_BYTES = SAMPLE_RATE * BLOCK_ALIGN / 25 // 1280 (40ms)
     }
 
     var toneFilePath: String? = null
@@ -116,6 +116,15 @@ class ElevenLabsCallBridge(private val context: Context) {
         } catch (e: Exception) {
             Log.e(TAG, "Error creating agent play file", e)
         }
+    }
+
+    /**
+     * Clear queued agent audio (called on interruption events).
+     */
+    fun clearAgentAudioQueue() {
+        val cleared = agentAudioQueue.size
+        agentAudioQueue.clear()
+        Log.i(TAG, "Cleared $cleared chunks from agent audio queue (interruption)")
     }
 
     /**

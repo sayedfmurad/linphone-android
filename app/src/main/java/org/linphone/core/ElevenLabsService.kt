@@ -5,7 +5,7 @@ import android.util.Log
 
 object ElevenLabsService {
     private const val TAG = "ElevenLabsService"
-    private const val AGENT_ID = "agent_8701khp3v3s3ffqrtxmv80qae79m"
+    private const val AGENT_ID = "agent_6501khpyj5p7fzab1xrqda8sewjt"
 
     private var webSocketClient: ElevenLabsWebSocketClient? = null
     private var callBridge: ElevenLabsCallBridge? = null
@@ -14,14 +14,49 @@ object ElevenLabsService {
     private var audioHandler: ElevenLabsAudioHandler? = null
 
     /**
-     * Phase 1: Generate tone WAV file and prepare record file.
+     * Phase 1: Generate tone WAV file, prepare record file, AND start WebSocket connection.
      * Call BEFORE answerCall(). Returns the tone file path for core.playFile.
+     *
+     * The WebSocket connects in parallel with SIP call setup to eliminate
+     * connection latency (~1-2s of DNS + TCP + TLS + WS handshake).
      */
     fun prepareBridge(context: Context): String {
         disconnect()
+
         callBridge = ElevenLabsCallBridge(context)
         val tonePath = callBridge!!.prepare()
         Log.i(TAG, "Bridge prepared with tone file: $tonePath")
+
+        // Start WebSocket connection EARLY — connects in parallel with SIP setup
+        val bridge = callBridge!!
+        webSocketClient = ElevenLabsWebSocketClient(
+            agentId = AGENT_ID,
+            onConnected = {
+                Log.i(TAG, "Agent connected (early), switching to live audio when bridge is ready")
+                bridge.onAgentConnected()
+            },
+            onAudioReceived = { audioData ->
+                bridge.writeAgentAudio(audioData)
+            },
+            onAgentResponse = { response ->
+                Log.d(TAG, "Agent response: $response")
+            },
+            onInterruption = {
+                Log.i(TAG, "Agent interrupted, clearing audio queue")
+                bridge.clearAgentAudioQueue()
+            },
+            onError = { error ->
+                Log.e(TAG, "WebSocket error", error)
+            }
+        )
+
+        try {
+            webSocketClient?.connect()
+            Log.i(TAG, "WebSocket connection started (parallel with SIP setup)")
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to connect to ElevenLabs agent", e)
+        }
+
         return tonePath
     }
 
@@ -29,12 +64,12 @@ object ElevenLabsService {
     fun getRecordPath(): String? = callBridge?.recordFilePath
 
     /**
-     * Phase 2: Start file tail reader + WebSocket connection.
+     * Phase 2: Start file tail reader for caller audio.
      * Call AFTER core.recordFile is set (during StreamsRunning).
      * @param core The Linphone Core instance, needed to swap core.playFile when agent connects.
      */
-    fun startBridge(core: Core) {
-        Log.i(TAG, "Starting ElevenLabs bridge phase 2")
+    fun startAudioBridge(core: Core) {
+        Log.i(TAG, "Starting audio bridge phase 2 (file reader + playFile swap)")
 
         val bridge = callBridge
         if (bridge == null) {
@@ -48,33 +83,9 @@ object ElevenLabsService {
             core.playFile = agentFilePath
         }
 
-        webSocketClient = ElevenLabsWebSocketClient(
-            agentId = AGENT_ID,
-            onConnected = {
-                Log.i(TAG, "Agent connected, switching to live audio")
-                bridge.onAgentConnected()
-            },
-            onAudioReceived = { audioData ->
-                bridge.writeAgentAudio(audioData)
-            },
-            onAgentResponse = { response ->
-                Log.d(TAG, "Agent response: $response")
-            },
-            onError = { error ->
-                Log.e(TAG, "WebSocket error", error)
-            }
-        )
-
-        // Start reading caller audio from the record file
+        // Start reading caller audio from the record file and sending to WebSocket
         bridge.startRecording { callerAudioData ->
             webSocketClient?.sendAudio(callerAudioData)
-        }
-
-        try {
-            webSocketClient?.connect()
-        } catch (e: Exception) {
-            Log.e(TAG, "Failed to connect to ElevenLabs agent", e)
-            disconnect()
         }
     }
 
@@ -99,6 +110,9 @@ object ElevenLabsService {
             },
             onAgentResponse = { response ->
                 Log.d(TAG, "Agent response: $response")
+            },
+            onInterruption = {
+                Log.i(TAG, "Agent interrupted (manual mode)")
             },
             onError = { error ->
                 Log.e(TAG, "WebSocket error", error)
