@@ -22,7 +22,7 @@ class ElevenLabsCallBridge(private val context: Context) {
         private const val BITS_PER_SAMPLE = 16
         private const val BYTE_RATE = SAMPLE_RATE * CHANNELS * BITS_PER_SAMPLE / 8 // 32000
         private const val BLOCK_ALIGN = CHANNELS * BITS_PER_SAMPLE / 8 // 2
-        private const val TONE_DURATION_SECONDS = 120
+        private const val TONE_DURATION_SECONDS = 10
         // 20ms chunk = 640 bytes at 16kHz 16-bit mono
         private const val CHUNK_MS = 20L
         private const val CHUNK_BYTES = (SAMPLE_RATE * BLOCK_ALIGN * CHUNK_MS / 1000).toInt() // 640
