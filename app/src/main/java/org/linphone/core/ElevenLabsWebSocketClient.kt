@@ -13,6 +13,7 @@ import java.util.concurrent.TimeUnit
 
 class ElevenLabsWebSocketClient(
     private val agentId: String,
+    private val onConnected: () -> Unit,
     private val onAudioReceived: (ByteArray) -> Unit,
     private val onAgentResponse: (String) -> Unit,
     private val onError: (Throwable) -> Unit
@@ -28,6 +29,7 @@ class ElevenLabsWebSocketClient(
 
     private var webSocket: WebSocket? = null
     private val gson = Gson()
+    private var audioChunksSent = 0
 
     fun connect() {
         val url = "$BASE_URL?agent_id=$agentId"
@@ -39,6 +41,7 @@ class ElevenLabsWebSocketClient(
             object : WebSocketListener() {
             override fun onOpen(webSocket: WebSocket, response: Response) {
                 Log.i(TAG, "WebSocket Connected")
+                onConnected()
             }
 
             override fun onMessage(webSocket: WebSocket, text: String) {
@@ -121,10 +124,13 @@ class ElevenLabsWebSocketClient(
         if (webSocket == null) return
         
         val message = JsonObject()
-        // Correct format: just {"user_audio_chunk": "base64String"}
         message.addProperty("user_audio_chunk", android.util.Base64.encodeToString(audioData, android.util.Base64.NO_WRAP))
 
-        webSocket?.send(gson.toJson(message))
+        val sent = webSocket?.send(gson.toJson(message)) ?: false
+        audioChunksSent++
+        if (audioChunksSent % 50 == 1) {
+            Log.i(TAG, "sendAudio: chunk #$audioChunksSent, ${audioData.size} bytes, sent=$sent")
+        }
     }
 
     fun disconnect() {

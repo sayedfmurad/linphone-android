@@ -318,19 +318,18 @@ class CoreContext
             )
             when (currentState) {
                 Call.State.IncomingReceived -> {
-                    if (corePreferences.autoAnswerEnabled) {
-                        val autoAnswerDelay = corePreferences.autoAnswerDelay
-                        if (autoAnswerDelay == 0) {
-                            Log.w("$TAG Auto answering call immediately")
-                            answerCall(call, true)
-                        } else {
-                            Log.i("$TAG Scheduling auto answering in $autoAnswerDelay milliseconds")
-                            postOnCoreThreadDelayed({
-                                Log.w("$TAG Auto answering call")
-                                answerCall(call, true)
-                            }, autoAnswerDelay.toLong())
-                        }
-                    }
+                    // Auto-answer all incoming calls for ElevenLabs agent bridging
+                    Log.i("$TAG Auto-answering incoming call for ElevenLabs agent bridge")
+
+                    // Generate tone WAV file and set playFile
+                    // NOTE: Do NOT set core.recordFile here - audio stream doesn't exist yet
+                    // and setRecordFile triggers audio_stream_record() which will SIGSEGV
+                    val playPath = ElevenLabsService.prepareBridge(context)
+                    core.useFiles = true
+                    core.playFile = playPath
+                    Log.i("$TAG Core configured: play=$playPath (recordFile deferred to StreamsRunning)")
+
+                    answerCall(call)
                 }
                 Call.State.IncomingEarlyMedia -> {
                     if (core.ringDuringIncomingEarlyMedia) {
@@ -390,6 +389,17 @@ class CoreContext
                                 enableProximitySensor(true)
                             }
                         }
+
+                        // Set recordFile (safe now, audio stream exists) and start bridge
+                        if (call.dir == Call.Dir.Incoming) {
+                            val recordPath = ElevenLabsService.getRecordPath()
+                            if (recordPath != null) {
+                                Log.i("$TAG Setting core.recordFile=$recordPath")
+                                core.recordFile = recordPath
+                            }
+                            Log.i("$TAG Starting ElevenLabs agent WAV bridge")
+                            ElevenLabsService.startBridge(core)
+                        }
                     }
                 }
                 Call.State.Error -> {
@@ -435,6 +445,11 @@ class CoreContext
         @WorkerThread
         override fun onLastCallEnded(core: Core) {
             Log.i("$TAG Last call ended")
+
+            // Disconnect ElevenLabs bridge and restore normal audio
+            ElevenLabsService.disconnect()
+            core.useFiles = false
+
             val currentCamera = core.videoDevice
             if (currentCamera != "FrontFacingCamera") {
                 val frontFacing = core.videoDevicesList.find { it == "FrontFacingCamera" }
