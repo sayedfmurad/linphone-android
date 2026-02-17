@@ -99,9 +99,6 @@ class CoreContext
         MutableLiveData<Event<Pair<String, String?>>>()
     }
 
-    // ElevenLabs Integration
-    private val elevenLabsHandlers = mutableMapOf<Call, ElevenLabsCallHandler>()
-
     val digestAuthenticationRequestedEvent: MutableLiveData<Event<String>> by lazy {
         MutableLiveData<Event<String>>()
     }
@@ -313,20 +310,6 @@ class CoreContext
             state: Call.State,
             message: String
         ) {
-            // ElevenLabs Integration
-            if (call.remoteAddress.domain == "sip.rtc.elevenlabs.io") {
-                val agentId = call.remoteAddress.username ?: ""
-                var handler = elevenLabsHandlers[call]
-                if (handler == null && (state == Call.State.OutgoingInit || state == Call.State.OutgoingProgress)) {
-                    handler = ElevenLabsCallHandler(core, call, agentId)
-                    elevenLabsHandlers[call] = handler
-                }
-                handler?.handleCallState(state)
-                
-                if (state == Call.State.End || state == Call.State.Error || state == Call.State.Released) {
-                    elevenLabsHandlers.remove(call)
-                }
-            }
 
             val currentState = call.state
 
