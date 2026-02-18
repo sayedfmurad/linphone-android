@@ -6,13 +6,18 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.RandomAccessFile
 import java.util.concurrent.ConcurrentLinkedQueue
+import java.util.concurrent.locks.ReentrantLock
+import kotlin.concurrent.withLock
 
 /**
  * Manages audio bridging between a Linphone call and ElevenLabs agent
- * using regular WAV files that Linphone's MSFilePlayer can read.
+ * using WAV files that Linphone's MSFilePlayer can read.
  *
- * Play direction (to caller): Pre-generated tone file → continuous-write agent file
- * Record direction (from caller): Linphone writes WAV → we tail-read new audio data
+ * Optimized for minimum latency:
+ * - Writer thread uses wait/notify (reacts instantly to incoming audio)
+ * - Reader thread uses tight 1ms polling with batch reads
+ * - Zero pre-buffer — agent audio plays as soon as it arrives
+ * - Small 10ms chunks for finer granularity
  */
 class ElevenLabsCallBridge(private val context: Context) {
     companion object {
@@ -22,12 +27,16 @@ class ElevenLabsCallBridge(private val context: Context) {
         private const val BITS_PER_SAMPLE = 16
         private const val BYTE_RATE = SAMPLE_RATE * CHANNELS * BITS_PER_SAMPLE / 8 // 32000
         private const val BLOCK_ALIGN = CHANNELS * BITS_PER_SAMPLE / 8 // 2
+
         private const val TONE_DURATION_SECONDS = 10
-        // 20ms chunk = 640 bytes at 16kHz 16-bit mono
-        private const val CHUNK_MS = 20L
-        private const val CHUNK_BYTES = (SAMPLE_RATE * BLOCK_ALIGN * CHUNK_MS / 1000).toInt() // 640
-        // Pre-buffer: 40ms of silence written ahead so MSFilePlayer never catches up
-        private const val PRE_BUFFER_BYTES = SAMPLE_RATE * BLOCK_ALIGN / 25 // 1280 (40ms)
+
+        // 10ms chunk = 320 bytes at 16kHz 16-bit mono (smaller = lower latency)
+        private const val CHUNK_MS = 10L
+        private const val CHUNK_BYTES = (SAMPLE_RATE * BLOCK_ALIGN * CHUNK_MS / 1000).toInt() // 320
+
+        // Zero pre-buffer: MSFilePlayer starts reading immediately
+        // We stay ahead by writing silence continuously when no agent audio is available
+        private const val PRE_BUFFER_BYTES = 0
     }
 
     var toneFilePath: String? = null
@@ -46,8 +55,10 @@ class ElevenLabsCallBridge(private val context: Context) {
     private var agentFileOutputStream: FileOutputStream? = null
     private var agentDataBytesWritten: Long = 0
 
-    // Queue for incoming agent audio chunks
+    // Queue for incoming agent audio chunks — writer thread wakes up on notify
     private val agentAudioQueue = ConcurrentLinkedQueue<ByteArray>()
+    private val writerLock = ReentrantLock()
+    private val writerCondition = writerLock.newCondition()
     private val silence = ByteArray(CHUNK_BYTES) // pre-allocated silence buffer
 
     private var onCallerAudio: ((ByteArray) -> Unit)? = null
@@ -87,7 +98,7 @@ class ElevenLabsCallBridge(private val context: Context) {
 
     /**
      * Called when ElevenLabs agent WebSocket connects.
-     * Creates agent play file with pre-buffer, starts continuous writer, triggers playFile swap.
+     * Creates agent play file, starts continuous writer, triggers playFile swap.
      */
     fun onAgentConnected() {
         Log.i(TAG, "Agent connected, preparing agent audio file")
@@ -101,12 +112,9 @@ class ElevenLabsCallBridge(private val context: Context) {
             // Write WAV header with max data size (continuous streaming)
             writeWavHeader(agentFileOutputStream!!, Int.MAX_VALUE)
 
-            // Pre-fill 1 second of silence as buffer so MSFilePlayer stays behind us
-            agentFileOutputStream!!.write(ByteArray(PRE_BUFFER_BYTES))
-            agentFileOutputStream!!.flush()
-            agentDataBytesWritten += PRE_BUFFER_BYTES
-
-            Log.i(TAG, "Agent play file created with ${PRE_BUFFER_BYTES} bytes pre-buffer")
+            // No pre-buffer — start the writer thread immediately
+            // The writer will produce silence at the target rate to keep MSFilePlayer fed
+            Log.i(TAG, "Agent play file created (zero pre-buffer, 10ms chunks)")
 
             // Start the continuous writer thread BEFORE swapping playFile
             startWriterThread()
@@ -129,14 +137,24 @@ class ElevenLabsCallBridge(private val context: Context) {
 
     /**
      * Queue agent audio for writing (called from WebSocket thread).
+     * Immediately wakes the writer thread to process it.
      */
     fun writeAgentAudio(audioData: ByteArray) {
         agentAudioQueue.offer(audioData)
+        // Wake writer thread immediately — no waiting for the next sleep cycle
+        writerLock.withLock {
+            writerCondition.signal()
+        }
     }
 
     fun stop() {
         isRunning = false
         agentConnected = false
+
+        // Wake writer thread so it can exit
+        writerLock.withLock {
+            writerCondition.signal()
+        }
 
         readThread?.interrupt()
         writerThread?.interrupt()
@@ -159,38 +177,57 @@ class ElevenLabsCallBridge(private val context: Context) {
     }
 
     /**
-     * Continuous writer thread: writes agent audio or silence at the playback rate.
-     * This ensures MSFilePlayer never reaches EOF and never loops.
+     * Reactive writer thread: writes agent audio INSTANTLY when it arrives.
+     * Uses wait/notify instead of sleep to eliminate latency.
      *
-     * Every 20ms, it writes exactly 640 bytes (one chunk):
-     * - If agent audio is queued, write that
-     * - Otherwise, write silence
+     * When no audio is queued, writes silence every CHUNK_MS to keep
+     * MSFilePlayer fed and prevent EOF/looping.
      */
     private fun startWriterThread() {
         writerThread = Thread {
-            Log.i(TAG, "Writer thread started (${CHUNK_MS}ms chunks, ${CHUNK_BYTES} bytes each)")
+            Log.i(TAG, "Writer thread started (reactive, ${CHUNK_MS}ms silence interval)")
+            var nextSilenceTime = System.nanoTime() + CHUNK_MS * 1_000_000
+
             try {
                 while (isRunning) {
                     val fos = agentFileOutputStream ?: break
 
-                    // Drain all queued agent audio chunks first (no sleep between them)
+                    // Drain ALL queued agent audio immediately (no delay between chunks)
                     var wrote = false
                     var agentData = agentAudioQueue.poll()
                     while (agentData != null) {
                         fos.write(agentData)
+                        fos.flush()
                         agentDataBytesWritten += agentData.size
                         wrote = true
                         agentData = agentAudioQueue.poll()
                     }
 
-                    if (!wrote) {
-                        // No agent data — write silence to keep file growing
-                        fos.write(silence)
-                        agentDataBytesWritten += silence.size
+                    if (wrote) {
+                        // Reset silence timer — we just wrote real audio
+                        nextSilenceTime = System.nanoTime() + CHUNK_MS * 1_000_000
+                    } else {
+                        // No audio data — check if it's time to write silence
+                        val now = System.nanoTime()
+                        if (now >= nextSilenceTime) {
+                            fos.write(silence)
+                            fos.flush()
+                            agentDataBytesWritten += silence.size
+                            nextSilenceTime = now + CHUNK_MS * 1_000_000
+                        }
                     }
 
-                    fos.flush() // Single flush after all writes
-                    Thread.sleep(CHUNK_MS)
+                    // Wait for new audio or next silence interval (whichever is sooner)
+                    if (agentAudioQueue.isEmpty()) {
+                        writerLock.withLock {
+                            if (agentAudioQueue.isEmpty() && isRunning) {
+                                val waitNanos = nextSilenceTime - System.nanoTime()
+                                if (waitNanos > 0) {
+                                    writerCondition.awaitNanos(waitNanos)
+                                }
+                            }
+                        }
+                    }
                 }
             } catch (e: InterruptedException) {
                 Log.i(TAG, "Writer thread interrupted")
@@ -200,12 +237,14 @@ class ElevenLabsCallBridge(private val context: Context) {
             Log.i(TAG, "Writer thread ended, total bytes written: $agentDataBytesWritten")
         }
         writerThread?.name = "ElevenLabs-WAV-Write"
+        writerThread?.priority = Thread.MAX_PRIORITY
         writerThread?.start()
     }
 
     /**
      * Tail-read the record WAV file for new audio data.
      * Linphone writes caller audio; we read new bytes as they appear.
+     * Uses tight 1ms polling for minimum latency.
      */
     private fun startReadThread() {
         readThread = Thread {
@@ -216,8 +255,8 @@ class ElevenLabsCallBridge(private val context: Context) {
                 // Wait for Linphone to start writing (WAV header = 44 bytes)
                 var waited = 0
                 while (isRunning && file.length() < 44 && waited < 30000) {
-                    Thread.sleep(100)
-                    waited += 100
+                    Thread.sleep(50) // Check more frequently during startup
+                    waited += 50
                 }
 
                 if (!isRunning || file.length() < 44) {
@@ -237,9 +276,7 @@ class ElevenLabsCallBridge(private val context: Context) {
                 val fileSampleRate = b0 or (b1 shl 8) or (b2 shl 16) or (b3 shl 24)
                 Log.i(TAG, "Read thread: WAV sample rate = $fileSampleRate Hz")
 
-                // Calculate chunk size for 20ms at the file's sample rate
-                // At 48kHz: 48000 * 2 * 20/1000 = 1920 bytes per 20ms
-                // At 16kHz: 16000 * 2 * 20/1000 = 640 bytes per 20ms
+                // Use 10ms chunks for lower latency
                 val fileChunkBytes = (fileSampleRate * BLOCK_ALIGN * CHUNK_MS / 1000).toInt()
                 val needsDownsample = fileSampleRate != SAMPLE_RATE
                 val downsampleRatio = if (needsDownsample) fileSampleRate / SAMPLE_RATE else 1
@@ -255,33 +292,43 @@ class ElevenLabsCallBridge(private val context: Context) {
 
                 while (isRunning) {
                     val available = file.length() - readPosition
-                    if (available >= buffer.size) {
-                        val read = raf.read(buffer)
-                        if (read > 0) {
-                            readPosition += read
 
-                            val audioToSend = if (needsDownsample && read >= BLOCK_ALIGN * downsampleRatio) {
-                                // Downsample: take every Nth sample (16-bit = 2 bytes per sample)
-                                val inputSamples = read / BLOCK_ALIGN
-                                val outputSamples = inputSamples / downsampleRatio
-                                val downsampled = ByteArray(outputSamples * BLOCK_ALIGN)
-                                for (i in 0 until outputSamples) {
-                                    val srcIdx = i * downsampleRatio * BLOCK_ALIGN
-                                    val dstIdx = i * BLOCK_ALIGN
-                                    // Copy 2 bytes (16-bit sample)
-                                    downsampled[dstIdx] = buffer[srcIdx]
-                                    downsampled[dstIdx + 1] = buffer[srcIdx + 1]
+                    if (available >= buffer.size) {
+                        // Read ALL available chunks in a tight loop (batch processing)
+                        var chunksThisRound = 0
+                        while (isRunning && file.length() - readPosition >= buffer.size) {
+                            val read = raf.read(buffer)
+                            if (read > 0) {
+                                readPosition += read
+
+                                val audioToSend = if (needsDownsample && read >= BLOCK_ALIGN * downsampleRatio) {
+                                    // Downsample: take every Nth sample (16-bit = 2 bytes per sample)
+                                    val inputSamples = read / BLOCK_ALIGN
+                                    val outputSamples = inputSamples / downsampleRatio
+                                    val downsampled = ByteArray(outputSamples * BLOCK_ALIGN)
+                                    for (i in 0 until outputSamples) {
+                                        val srcIdx = i * downsampleRatio * BLOCK_ALIGN
+                                        val dstIdx = i * BLOCK_ALIGN
+                                        // Copy 2 bytes (16-bit sample)
+                                        downsampled[dstIdx] = buffer[srcIdx]
+                                        downsampled[dstIdx + 1] = buffer[srcIdx + 1]
+                                    }
+                                    downsampled
+                                } else {
+                                    if (read == buffer.size) buffer else buffer.copyOf(read)
                                 }
-                                downsampled
-                            } else {
-                                if (read == buffer.size) buffer else buffer.copyOf(read)
+
+                                onCallerAudio?.invoke(audioToSend)
+                                totalChunksSent++
+                                chunksThisRound++
                             }
 
-                            onCallerAudio?.invoke(audioToSend)
-                            totalChunksSent++
+                            // Don't process too many chunks at once to avoid blocking
+                            if (chunksThisRound >= 10) break
                         }
                     } else {
-                        Thread.sleep(2)
+                        // Tight poll — 1ms sleep to catch new data ASAP
+                        Thread.sleep(1)
                     }
 
                     // Log diagnostics every 5 seconds
@@ -300,6 +347,7 @@ class ElevenLabsCallBridge(private val context: Context) {
             }
         }
         readThread?.name = "ElevenLabs-WAV-Read"
+        readThread?.priority = Thread.MAX_PRIORITY
         readThread?.start()
     }
 

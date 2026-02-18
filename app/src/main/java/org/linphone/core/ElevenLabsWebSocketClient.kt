@@ -26,6 +26,7 @@ class ElevenLabsWebSocketClient(
 
     private val client = OkHttpClient.Builder()
         .readTimeout(0, TimeUnit.MILLISECONDS) // Keep the connection open
+        .connectTimeout(5, TimeUnit.SECONDS) // Fast connection timeout
         .build()
 
     private var webSocket: WebSocket? = null
@@ -33,7 +34,8 @@ class ElevenLabsWebSocketClient(
     private var audioChunksSent = 0
 
     fun connect() {
-        val url = "$BASE_URL?agent_id=$agentId"
+        // Add optimize_streaming_latency=4 for maximum speed
+        val url = "$BASE_URL?agent_id=$agentId&optimize_streaming_latency=4"
         val request = Request.Builder().url(url).build()
         Log.i(TAG, "Connecting to: $url")
 
@@ -41,12 +43,12 @@ class ElevenLabsWebSocketClient(
             request,
             object : WebSocketListener() {
             override fun onOpen(webSocket: WebSocket, response: Response) {
-                Log.i(TAG, "WebSocket Connected")
+                Log.i(TAG, "WebSocket Connected, sending latency-optimized config")
+                sendInitialConfig(webSocket)
                 onConnected()
             }
 
             override fun onMessage(webSocket: WebSocket, text: String) {
-                Log.d(TAG, "Received message: $text")
                 try {
                     val message = gson.fromJson(text, JsonObject::class.java)
                     handleMessage(message)
@@ -56,7 +58,9 @@ class ElevenLabsWebSocketClient(
             }
 
             override fun onMessage(webSocket: WebSocket, bytes: ByteString) {
-                Log.d(TAG, "Received binary message: ${bytes.size} bytes")
+                // Binary audio — decode directly (more efficient than base64)
+                Log.d(TAG, "Received binary audio: ${bytes.size} bytes")
+                onAudioReceived(bytes.toByteArray())
             }
 
             override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {
@@ -72,17 +76,50 @@ class ElevenLabsWebSocketClient(
         )
     }
 
+    /**
+     * Send initial client configuration to optimize for low latency.
+     * This tells ElevenLabs to:
+     * - Use PCM 16kHz output (no transcoding needed on our side)
+     * - Optimize TTS for streaming latency over quality
+     */
+    private fun sendInitialConfig(ws: WebSocket) {
+        val config = JsonObject().apply {
+            addProperty("type", "conversation_initiation_client_data")
+
+            val conversationConfig = JsonObject()
+
+            // Request PCM 16kHz audio output — matches our WAV file format exactly
+            val audio = JsonObject()
+            audio.addProperty("output_format", "pcm_16000")
+            audio.addProperty("input_format", "pcm_16000")
+            conversationConfig.add("audio", audio)
+
+            // Optimize TTS for minimum latency
+            val tts = JsonObject()
+            tts.addProperty("optimize_streaming_latency", 4)
+            conversationConfig.add("tts", tts)
+
+            add("conversation_config_override", conversationConfig)
+        }
+
+        val configJson = gson.toJson(config)
+        ws.send(configJson)
+        Log.i(TAG, "Sent latency-optimized config: $configJson")
+    }
+
     private fun handleMessage(message: JsonObject) {
         val type = message.get("type")?.asString
-        
+
         when (type) {
+            "conversation_initiation_metadata" -> {
+                Log.i(TAG, "Conversation initialized: ${message.get("conversation_id")?.asString}")
+            }
             "agent_response" -> {
-                val response = message.get("agent_response_event")?.asJsonObject
                 val audioBase64 = message.get("audio_event")?.asJsonObject?.get("audio_base_64")?.asString
 
                 if (audioBase64 != null) {
                    try {
-                       val audioBytes = android.util.Base64.decode(audioBase64, android.util.Base64.DEFAULT)
+                       val audioBytes = android.util.Base64.decode(audioBase64, android.util.Base64.NO_WRAP)
                        onAudioReceived(audioBytes)
                    } catch (e: Exception) {
                        Log.e(TAG, "Error decoding audio", e)
@@ -93,7 +130,7 @@ class ElevenLabsWebSocketClient(
                  val audioBase64 = message.get("audio_event")?.asJsonObject?.get("audio_base_64")?.asString
                  if (audioBase64 != null) {
                     try {
-                        val audioBytes = android.util.Base64.decode(audioBase64, android.util.Base64.DEFAULT)
+                        val audioBytes = android.util.Base64.decode(audioBase64, android.util.Base64.NO_WRAP)
                         onAudioReceived(audioBytes)
                     } catch (e: Exception) {
                         Log.e(TAG, "Error decoding audio", e)
@@ -107,7 +144,7 @@ class ElevenLabsWebSocketClient(
             "ping" -> {
                 val pingEvent = message.get("ping_event")?.asJsonObject
                 val eventId = pingEvent?.get("event_id")?.asInt
-                
+
                 val pong = JsonObject()
                 pong.addProperty("type", "pong")
                 if (eventId != null) {
@@ -116,20 +153,20 @@ class ElevenLabsWebSocketClient(
                 webSocket?.send(gson.toJson(pong))
             }
             else -> {
-                 Log.d(TAG, "Unknown message type: $type")
+                 Log.d(TAG, "Message type: $type")
             }
         }
     }
 
     fun sendAudio(audioData: ByteArray) {
         if (webSocket == null) return
-        
+
         val message = JsonObject()
         message.addProperty("user_audio_chunk", android.util.Base64.encodeToString(audioData, android.util.Base64.NO_WRAP))
 
         val sent = webSocket?.send(gson.toJson(message)) ?: false
         audioChunksSent++
-        if (audioChunksSent % 50 == 1) {
+        if (audioChunksSent % 100 == 1) {
             Log.i(TAG, "sendAudio: chunk #$audioChunksSent, ${audioData.size} bytes, sent=$sent")
         }
     }
