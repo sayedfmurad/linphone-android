@@ -1,6 +1,9 @@
+ scp  sid@s
+id.local:/home/sid/ai-bridge/app.js ./app.js
 
 ~/Library/Android/sdk/platform-tools/adb connect 192.168.231.7:44503
 
+sudo asterisk -cvvv
 # Show current agent ID
 python3 /home/sid/ai-bridge/update_agent.py --show
 
