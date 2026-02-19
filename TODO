@@ -16,8 +16,6 @@ tail -f /tmp/app.log
 # Restart manually
 sudo systemctl restart ai-bridge
 
-# Change agent ID
-python3 /home/sid/ai-bridge/update_agent.py agent_NEW_ID_HERE
 
 2) Linphone account settings
 
