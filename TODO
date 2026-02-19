@@ -1,2 +1,20 @@
 
 ~/Library/Android/sdk/platform-tools/adb connect 192.168.231.7:44503
+
+# Show current agent ID
+python3 /home/sid/ai-bridge/update_agent.py --show
+
+# Update to a new agent ID (automatically restarts Node)
+python3 /home/sid/ai-bridge/update_agent.py agent_NEW_ID_HERE
+
+# Check status
+sudo systemctl status ai-bridge
+
+# View logs
+tail -f /tmp/app.log
+
+# Restart manually
+sudo systemctl restart ai-bridge
+
+# Change agent ID
+python3 /home/sid/ai-bridge/update_agent.py agent_NEW_ID_HERE
