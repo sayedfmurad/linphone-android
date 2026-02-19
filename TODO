@@ -18,3 +18,15 @@ sudo systemctl restart ai-bridge
 
 # Change agent ID
 python3 /home/sid/ai-bridge/update_agent.py agent_NEW_ID_HERE
+
+2) Linphone account settings
+
+In Linphone → Add SIP account:
+
+Username: 1000
+
+Password: 1234
+
+Domain: PI_IP_ADDRESS (example 192.168.1.50)
+
+Transport: UDP
