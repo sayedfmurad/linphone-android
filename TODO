@@ -8,7 +8,7 @@ sudo asterisk -cvvv
 python3 /home/sid/ai-bridge/update_agent.py --show
 
 # Update to a new agent ID (automatically restarts Node)
-python3 /home/sid/ai-bridge/update_agent.py agent_NEW_ID_HERE
+python3 /home/sid/ai-bridge/update_agent.py agent_4801khw4bs37ezvs1shksrecep33
 
 # Check status
 sudo systemctl status ai-bridge

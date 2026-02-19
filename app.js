@@ -82,7 +82,7 @@ function connectElevenLabs() {
 
       let chunk;
 
-      if (audioQueue.length >= 160) {
+      if (audioQueue.length >= 480) {
         chunk = audioQueue.slice(0, 160);
         audioQueue = audioQueue.slice(160);
         hasAudio = true;
