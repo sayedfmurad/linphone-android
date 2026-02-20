@@ -8,7 +8,7 @@ const ARI_USER = 'aiuser';
 const ARI_PASS = 'strongpassword';
 const RTP_PORT = 5004;
 const LOCAL_IP = '127.0.0.1';
-const AGENT_ID = 'agent_6101khw0gytpeh2bbvfb2bcdjd05';
+const AGENT_ID = 'agent_5601khy2mkhzepbvawnw22p0hxf3';
 
 process.on('unhandledRejection', (err) => {
   console.warn('⚠️  Unhandled:', err.message || err);
@@ -63,9 +63,9 @@ function buildRtpPacket(payload, seqNum, timestamp, ssrc) {
   return Buffer.concat([h, payload]);
 }
 
-function connectElevenLabs() {
+function connectElevenLabs(callerNumber) {
   const ws = new WebSocket(`wss://api.elevenlabs.io/v1/convai/conversation?agent_id=${AGENT_ID}`);
-  console.log('🔌 Connecting to ElevenLabs...');
+  console.log('🔌 Connecting to ElevenLabs.......', AGENT_ID);
 
   let rtpSeq = 0, rtpTs = 0;
   const rtpSSRC = Math.floor(Math.random() * 0xFFFFFFFF);
@@ -110,7 +110,17 @@ function connectElevenLabs() {
     }, 20);
   }
 
-  ws.on('open', () => console.log('🟢 ElevenLabs connected'));
+  ws.on('open', () => {
+    console.log('🟢 ElevenLabs connected');
+    if (callerNumber) {
+      ws.send(JSON.stringify({
+        type: 'conversation_initiation_client_data',
+        dynamic_variables: {
+          phone_number: callerNumber
+        }
+      }));
+    }
+  });
 
   ws.on('message', (data) => {
     try {
@@ -204,7 +214,7 @@ AriClient.connect(ARI_URL, ARI_USER, ARI_PASS)
         await bridge.addChannel({ channel: ext.id });
         console.log('🔗 Bridged');
 
-        const ws = connectElevenLabs();
+        const ws = connectElevenLabs(channel.caller.number);
         let cleaned = false;
         callState = {
           ws, ready: false, logged: false,
